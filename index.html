@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="km">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Age Calculator - Detailed</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #e0eafc, #cfdef3);
+        font-family: "Kantumruy Pro", sans-serif;
+      }
+      .container {
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 40px 20px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      }
+      .title {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+      }
+      .age-calculator {
+        margin: 5px 0;
+        color: #5d6d7e;
+        font-weight: 400;
+      }
+      .input-date {
+        margin: 25px 0;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+      }
+      .date {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        outline: none;
+      }
+      .btn {
+        cursor: pointer;
+        background-color: #3498db;
+        color: #fff;
+        font-family: inherit;
+        font-weight: 600;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+      .btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+      }
+      .result-container {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .result-box {
+        background: #fff;
+        padding: 15px 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      }
+      .result-box span {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #e74c3c;
+      }
+      .result-box label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+      }
+      .status-msg {
+        margin-top: 15px;
+        color: #7f8c8d;
+      }
+      footer {
+        margin-top: 30px;
+        font-size: 0.85rem;
+        color: #95a5a6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">គណនាអាយុ</h1>
+      <h3 class="age-calculator">Age Calculator (Pro)</h3>
+      
+      <div class="input-date">
+        <label for="dob">ជ្រើសរើសថ្ងៃកំណើតរបស់អ្នក</label>
+        <input type="date" id="dob" class="date" />
+        <button class="btn" id="calculateBtn">គណនាឥឡូវនេះ</button>
+      </div>
+      
+      <div id="resultArea" style="display: none;">
+        <div class="result-container">
+          <div class="result-box"><span id="resYears">0</span><label>ឆ្នាំ</label></div>
+          <div class="result-box"><span id="resMonths">0</span><label>ខែ</label></div>
+          <div class="result-box"><span id="resDays">0</span><label>ថ្ងៃ</label></div>
+          <div class="result-box"><span id="resHours">0</span><label>ម៉ោង</label></div>
+          <div class="result-box"><span id="resMinutes">0</span><label>នាទី</label></div>
+          <div class="result-box"><span id="resSeconds">0</span><label>វិនាទី</label></div>
+        </div>
+      </div>
+      
+      <p id="msg" class="status-msg">សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើតខាងលើ</p>
+      
+      <footer>&copy; បង្កើតដោយ ៖ រ៉ា ភារៈ</footer>
+    </div>
+
+    <script>
+      let timer;
+      const dobInput = document.getElementById('dob');
+      const calculateBtn = document.getElementById('calculateBtn');
+      const resultArea = document.getElementById('resultArea');
+      const msg = document.getElementById('msg');
+
+      function updateAge() {
+        const birthDateValue = dobInput.value;
+        if (!birthDateValue) return;
+
+        const birthDate = new Date(birthDateValue);
+        const now = new Date();
+
+        if (birthDate > now) {
+          msg.innerText = "ថ្ងៃខែឆ្នាំមិនត្រឹមត្រូវ (លើសពីថ្ងៃបច្ចុប្បន្ន)!";
+          msg.style.color = "red";
+          resultArea.style.display = "none";
+          clearInterval(timer);
+          return;
+        }
+
+        msg.innerText = "អាយុបច្ចុប្បន្នរបស់អ្នកគឺ៖";
+        msg.style.color = "#2c3e50";
+        resultArea.style.display = "block";
+
+        let years = now.getFullYear() - birthDate.getFullYear();
+        let months = now.getMonth() - birthDate.getMonth();
+        let days = now.getDate() - birthDate.getDate();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+
+        if (days < 0) {
+          months--;
+          const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+          days += lastMonth.getDate();
+        }
+
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        document.getElementById('resYears').innerText = years;
+        document.getElementById('resMonths').innerText = months;
+        document.getElementById('resDays').innerText = days;
+        document.getElementById('resHours').innerText = hours;
+        document.getElementById('resMinutes').innerText = minutes;
+        document.getElementById('resSeconds').innerText = seconds;
+      }
+
+      calculateBtn.addEventListener('click', () => {
+        if (!dobInput.value) {
+          msg.innerText = "សូមជ្រើសរើសថ្ងៃខែឆ្នាំជាមុនសិន!";
+          msg.style.color = "red";
+          return;
+        }
+        
+        // បញ្ឈប់ timer ចាស់ ប្រសិនបើមាន
+        if (timer) clearInterval(timer);
+        
+        // ចាប់ផ្ដើមគណនា និងធ្វើឱ្យ update រៀងរាល់ ១ វិនាទី
+        updateAge();
+        timer = setInterval(updateAge, 1000);
+      });
+    </script>
+  </body>
+</html>
